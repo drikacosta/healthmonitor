@@ -26,12 +26,23 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 
+	// JWT
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+
 	// Kotlin e Jackson
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
 	// Banco de Dados
 	runtimeOnly("org.mariadb.jdbc:mariadb-java-client:3.3.3")
+
+	// Swagger
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
+	// Serialização Kotlin
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
 	// Desenvolvimento
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
