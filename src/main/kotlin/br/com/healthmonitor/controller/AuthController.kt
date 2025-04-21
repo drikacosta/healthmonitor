@@ -1,30 +1,38 @@
 package br.com.healthmonitor.controller
 
-import br.com.healthmonitor.security.JwtTokenUtil
-import br.com.healthmonitor.security.UserDetailsServiceImpl
-import br.com.healthmonitor.dto.LoginRequestDTO
+import UserDetailsServiceImpl
 import br.com.healthmonitor.dto.JwtResponse
+import br.com.healthmonitor.dto.LoginRequestDTO
 import br.com.healthmonitor.model.Device
 import br.com.healthmonitor.model.HealthRecord
 import br.com.healthmonitor.model.HealthType
 import br.com.healthmonitor.model.User
+import br.com.healthmonitor.security.JwtTokenUtil
 import br.com.healthmonitor.service.DeviceService
 import br.com.healthmonitor.service.HealthRecordService
 import br.com.healthmonitor.service.UserService
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/auth")
 class AuthController(
     private val jwtTokenUtil: JwtTokenUtil,
-    private val userDetailsService: UserDetailsServiceImpl
+    private val userDetailsService: UserDetailsServiceImpl,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     @PostMapping("/login")
     fun login(@RequestBody loginRequest: LoginRequestDTO): ResponseEntity<JwtResponse> {
-        val username = loginRequest.username
-        val token = jwtTokenUtil.generateToken(username)
+        val userDetails = userDetailsService.loadUserByUsername(loginRequest.username)
+
+        if (!passwordEncoder.matches(loginRequest.password, userDetails.password)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        }
+
+        val token = jwtTokenUtil.generateToken(userDetails.username)
         return ResponseEntity.ok(JwtResponse(token))
     }
 }

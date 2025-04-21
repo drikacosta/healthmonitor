@@ -1,18 +1,16 @@
-package br.com.healthmonitor.config
-
 import br.com.healthmonitor.security.JwtTokenFilter
 import br.com.healthmonitor.security.JwtTokenUtil
-import br.com.healthmonitor.security.UserDetailsServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Configuration
@@ -20,19 +18,32 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig(
     private val jwtTokenUtil: JwtTokenUtil,
     private val userDetailsService: UserDetailsServiceImpl
-) : WebSecurityConfigurerAdapter() {
+) {
 
-    override fun configure(http: HttpSecurity) {
-        http.csrf().disable()
-            .authorizeRequests()
-            .antMatchers("/auth/**").permitAll()  // Acesso público à autenticação
-            .anyRequest().authenticated()  // Requer autenticação para o restante das rotas
-            .and()
-            .addFilterBefore(JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter::class.java)
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        val jwtTokenFilter = JwtTokenFilter(jwtTokenUtil, userDetailsService)
+
+        http.csrf { it.disable() }
+            .authorizeHttpRequests {
+                it.requestMatchers("/auth/**").permitAll()
+                it.anyRequest().authenticated()
+            }
+            .sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }
+            .authenticationProvider(daoAuthenticationProvider())
+            .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+
+        return http.build()
     }
 
-    override fun configure(auth: AuthenticationManagerBuilder) {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder())
+    @Bean
+    fun daoAuthenticationProvider(): DaoAuthenticationProvider {
+        val provider = DaoAuthenticationProvider()
+        provider.setUserDetailsService(userDetailsService)
+        provider.setPasswordEncoder(passwordEncoder())
+        return provider
     }
 
     @Bean
@@ -41,7 +52,7 @@ class SecurityConfig(
     }
 
     @Bean
-    override fun authenticationManagerBean(): AuthenticationManager {
-        return super.authenticationManagerBean()
+    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager {
+        return authConfig.authenticationManager
     }
 }
