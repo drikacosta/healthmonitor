@@ -3,15 +3,17 @@ package br.com.healthmonitor.security
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import io.jsonwebtoken.security.Keys
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
 import java.util.Date
 import javax.crypto.SecretKey
 
 @Component
-class JwtTokenUtil {
+
+class JwtTokenUtil (@Value("\${jwt.secret}") secret: String){
     private val expirationTime = 3600000 // 1 hora
-    private val secretKey: SecretKey = Keys.hmacShaKeyFor("healthmonitor-secret".toByteArray(StandardCharsets.UTF_8))
+    private val secretKey: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
 
     fun generateToken(username: String): String {
         return Jwts.builder()

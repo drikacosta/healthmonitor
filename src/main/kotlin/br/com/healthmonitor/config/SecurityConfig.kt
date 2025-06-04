@@ -1,5 +1,6 @@
 import br.com.healthmonitor.security.JwtTokenFilter
 import br.com.healthmonitor.security.JwtTokenUtil
+import br.com.healthmonitor.security.UserDetailsServiceImpl
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -17,13 +18,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class SecurityConfig(
     private val jwtTokenUtil: JwtTokenUtil,
-    private val userDetailsService: UserDetailsServiceImpl
+    private val userDetailsService: UserDetailsServiceImpl,
+    private val jwtTokenFilter: JwtTokenFilter
 ) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        val jwtTokenFilter = JwtTokenFilter(jwtTokenUtil, userDetailsService)
-
         http.csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers("/auth/**").permitAll()
@@ -47,9 +47,7 @@ class SecurityConfig(
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
     fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager {

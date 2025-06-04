@@ -1,6 +1,5 @@
 package br.com.healthmonitor.controller
 
-import UserDetailsServiceImpl
 import br.com.healthmonitor.dto.JwtResponse
 import br.com.healthmonitor.dto.LoginRequestDTO
 import br.com.healthmonitor.model.Device
@@ -8,6 +7,7 @@ import br.com.healthmonitor.model.HealthRecord
 import br.com.healthmonitor.model.HealthType
 import br.com.healthmonitor.model.User
 import br.com.healthmonitor.security.JwtTokenUtil
+import br.com.healthmonitor.security.UserDetailsServiceImpl
 import br.com.healthmonitor.service.DeviceService
 import br.com.healthmonitor.service.HealthRecordService
 import br.com.healthmonitor.service.UserService
