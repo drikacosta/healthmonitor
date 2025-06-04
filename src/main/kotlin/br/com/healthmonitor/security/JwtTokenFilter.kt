@@ -1,6 +1,6 @@
 package br.com.healthmonitor.security
 
-import UserDetailsServiceImpl
+
 import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest

@@ -1,3 +1,5 @@
+package br.com.healthmonitor.security
+
 import br.com.healthmonitor.repository.UserRepository
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
