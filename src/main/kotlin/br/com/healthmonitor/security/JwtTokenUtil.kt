@@ -13,7 +13,7 @@ import javax.crypto.SecretKey
 
 class JwtTokenUtil (@Value("\${jwt.secret}") secret: String){
     private val expirationTime = 3600000 // 1 hora
-    private val secretKey: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
+    private val secretKey: SecretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512)
 
     fun generateToken(username: String): String {
         return Jwts.builder()

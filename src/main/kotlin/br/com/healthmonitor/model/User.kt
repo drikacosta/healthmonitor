@@ -10,6 +10,8 @@ data class User(
 
     @Id
     val id: String = UUID.randomUUID().toString(),
+    @Column(unique = true, nullable = false)
+    val username: String,
 
     val name: String,
 
