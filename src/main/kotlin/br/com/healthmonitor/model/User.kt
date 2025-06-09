@@ -10,6 +10,8 @@ data class User(
 
     @Id
     val id: String = UUID.randomUUID().toString(),
+    @Column(unique = true, nullable = false)
+    val username: String,
 
     val name: String,
 
@@ -67,3 +69,20 @@ data class HealthRecord(
 enum class HealthType {
     frequencia_cardiaca, pressao_arterial, glicemia
 }
+@Entity
+data class GlicemiaManual(
+    @Id @GeneratedValue
+    val id: String = UUID.randomUUID().toString(),
+    val usuarioId: Long,
+    val valorGlicemia: Int,
+    val dataHora: LocalDateTime
+)
+@Entity
+data class FrequenciaCardiaca(
+    @Id @GeneratedValue
+    val id:String = UUID.randomUUID().toString(),
+    val usuarioId: Long,
+    val batimentos: Int,
+    val dataHora: LocalDateTime,
+    val dispositivoId: String
+)
