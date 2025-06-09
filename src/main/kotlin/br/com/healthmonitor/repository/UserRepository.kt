@@ -1,6 +1,8 @@
 package br.com.healthmonitor.repository
 
 import br.com.healthmonitor.model.Device
+import br.com.healthmonitor.model.FrequenciaCardiaca
+import br.com.healthmonitor.model.GlicemiaManual
 import br.com.healthmonitor.model.HealthRecord
 import br.com.healthmonitor.model.User
 import org.springframework.data.jpa.repository.JpaRepository
@@ -19,4 +21,11 @@ interface DeviceRepository : JpaRepository<Device, String> {
 
 interface HealthRecordRepository : JpaRepository<HealthRecord, String> {
     fun findAllByUser(user: User): List<HealthRecord>
+}
+interface GlicemiaRepository : JpaRepository<GlicemiaManual, Long> {
+    fun findByUsuarioId(usuarioId: Long): List<GlicemiaManual>
+}
+
+interface FrequenciaCardiacaRepository : JpaRepository<FrequenciaCardiaca, Long> {
+    fun findByUsuarioId(usuarioId: Long): List<FrequenciaCardiaca>
 }

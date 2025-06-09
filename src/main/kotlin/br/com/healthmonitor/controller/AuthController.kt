@@ -3,9 +3,13 @@ package br.com.healthmonitor.controller
 import br.com.healthmonitor.dto.JwtResponse
 import br.com.healthmonitor.dto.LoginRequestDTO
 import br.com.healthmonitor.model.Device
+import br.com.healthmonitor.model.FrequenciaCardiaca
+import br.com.healthmonitor.model.GlicemiaManual
 import br.com.healthmonitor.model.HealthRecord
 import br.com.healthmonitor.model.HealthType
 import br.com.healthmonitor.model.User
+import br.com.healthmonitor.repository.FrequenciaCardiacaRepository
+import br.com.healthmonitor.repository.GlicemiaRepository
 import br.com.healthmonitor.security.JwtTokenUtil
 import br.com.healthmonitor.security.UserDetailsServiceImpl
 import br.com.healthmonitor.service.DeviceService
@@ -84,5 +88,27 @@ class HealthRecordController(
             user = user
         )
         return service.save(record)
+    }
+    @RestController
+    @RequestMapping("/api/glicemia")
+    class GlicemiaController(val repo: GlicemiaRepository) {
+
+        @PostMapping("/manual")
+        fun registrar(@RequestBody glicemia: GlicemiaManual) = repo.save(glicemia)
+
+        @GetMapping("/historico/{usuarioId}")
+        fun historico(@PathVariable usuarioId: Long) =
+            repo.findByUsuarioId(usuarioId)
+    }
+    @RestController
+    @RequestMapping("/api/frequencia")
+    class FrequenciaController(val repo: FrequenciaCardiacaRepository) {
+
+        @PostMapping("/iot")
+        fun registrar(@RequestBody freq: FrequenciaCardiaca) = repo.save(freq)
+
+        @GetMapping("/historico/{usuarioId}")
+        fun historico(@PathVariable usuarioId: Long) =
+            repo.findByUsuarioId(usuarioId)
     }
 }
