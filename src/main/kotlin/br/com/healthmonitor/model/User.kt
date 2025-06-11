@@ -1,5 +1,6 @@
 package br.com.healthmonitor.model
 
+import br.com.healthmonitor.dto.HealthType
 import jakarta.persistence.*
 import java.time.LocalDateTime
 import java.util.*
@@ -73,16 +74,25 @@ enum class HealthType {
 data class GlicemiaManual(
     @Id @GeneratedValue
     val id: String = UUID.randomUUID().toString(),
-    val usuarioId: Long,
-    val valorGlicemia: Int,
+    val usuarioGlicemiaId : String,
+    val valorGlicemia: Double,
     val dataHora: LocalDateTime
 )
 @Entity
 data class FrequenciaCardiaca(
     @Id @GeneratedValue
     val id:String = UUID.randomUUID().toString(),
-    val usuarioId: Long,
+    val usuarioCardiacaId: String,
     val batimentos: Int,
     val dataHora: LocalDateTime,
     val dispositivoId: String
+)
+@Entity
+data class PressaoArterial(
+    @Id @GeneratedValue
+    val id: String = UUID.randomUUID().toString(),
+    val usuarioArterialId: String,
+    val sistolica: Int,
+    val diastolica: Int,
+    val dataHora: LocalDateTime
 )

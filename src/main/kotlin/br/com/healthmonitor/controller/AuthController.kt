@@ -1,20 +1,18 @@
 package br.com.healthmonitor.controller
 
+import br.com.healthmonitor.dto.HealthRecordDTO
 import br.com.healthmonitor.dto.JwtResponse
 import br.com.healthmonitor.dto.LoginRequestDTO
-import br.com.healthmonitor.model.Device
-import br.com.healthmonitor.model.FrequenciaCardiaca
-import br.com.healthmonitor.model.GlicemiaManual
-import br.com.healthmonitor.model.HealthRecord
-import br.com.healthmonitor.model.HealthType
-import br.com.healthmonitor.model.User
+import br.com.healthmonitor.model.*
 import br.com.healthmonitor.repository.FrequenciaCardiacaRepository
 import br.com.healthmonitor.repository.GlicemiaRepository
+import br.com.healthmonitor.repository.PressaoArterialRepository
 import br.com.healthmonitor.security.JwtTokenUtil
 import br.com.healthmonitor.security.UserDetailsServiceImpl
 import br.com.healthmonitor.service.DeviceService
 import br.com.healthmonitor.service.HealthRecordService
 import br.com.healthmonitor.service.UserService
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -29,7 +27,7 @@ class AuthController(
 ) {
 
     @PostMapping("/login")
-    fun login(@RequestBody loginRequest: LoginRequestDTO): ResponseEntity<JwtResponse> {
+    fun login(@Valid @RequestBody loginRequest: LoginRequestDTO): ResponseEntity<JwtResponse> {
         val userDetails = userDetailsService.loadUserByUsername(loginRequest.username)
 
         if (!passwordEncoder.matches(loginRequest.password, userDetails.password)) {
@@ -63,14 +61,6 @@ class DeviceController(
     }
 }
 
-data class HealthRecordDTO(
-    val email: String,
-    val tipo: HealthType,
-    val valor1: Double,
-    val valor2: Double?,
-    val observacao: String?
-)
-
 @RestController
 @RequestMapping("/api/records")
 class HealthRecordController(
@@ -81,7 +71,7 @@ class HealthRecordController(
     fun create(@RequestBody dto: HealthRecordDTO): HealthRecord? {
         val user = userService.getByEmail(dto.email) ?: return null
         val record = HealthRecord(
-            tipo = dto.tipo,
+            tipo = dto.type,
             valor1 = dto.valor1,
             valor2 = dto.valor2,
             observacao = dto.observacao,
@@ -89,6 +79,7 @@ class HealthRecordController(
         )
         return service.save(record)
     }
+
     @RestController
     @RequestMapping("/api/glicemia")
     class GlicemiaController(val repo: GlicemiaRepository) {
@@ -96,10 +87,11 @@ class HealthRecordController(
         @PostMapping("/manual")
         fun registrar(@RequestBody glicemia: GlicemiaManual) = repo.save(glicemia)
 
-        @GetMapping("/historico/{usuarioId}")
-        fun historico(@PathVariable usuarioId: Long) =
-            repo.findByUsuarioId(usuarioId)
+        @GetMapping("/historico/{usuarioGlicemiaId}")
+        fun historico(@PathVariable usuarioGlicemiaId: String) =
+            repo.findByUsuarioId(usuarioGlicemiaId)
     }
+
     @RestController
     @RequestMapping("/api/frequencia")
     class FrequenciaController(val repo: FrequenciaCardiacaRepository) {
@@ -107,8 +99,19 @@ class HealthRecordController(
         @PostMapping("/iot")
         fun registrar(@RequestBody freq: FrequenciaCardiaca) = repo.save(freq)
 
-        @GetMapping("/historico/{usuarioId}")
-        fun historico(@PathVariable usuarioId: Long) =
-            repo.findByUsuarioId(usuarioId)
+        @GetMapping("/historico/{usuarioCardiacaId}")
+        fun historico(@PathVariable usuarioCardiacaId: String) =
+            repo.findByUsuarioId(usuarioCardiacaId)
+    }
+    @RestController
+    @RequestMapping("/api/pressao")
+    class PressaoController(val repo: PressaoArterialRepository) {
+
+        @PostMapping("/iot")
+        fun registrar(@RequestBody pressao: PressaoArterial) = repo.save(pressao)
+
+        @GetMapping("/historico/{usuarioArterialId}")
+        fun historico(@PathVariable usuarioArterialId: String) =
+            repo.findByUsuarioId(usuarioArterialId)
     }
 }
