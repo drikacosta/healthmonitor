@@ -32,7 +32,7 @@ class FrequenciaCardiacaRepositoryTest @Autowired constructor(
 
         frequenciaCardiacaRepository.saveAll(listOf(frequencia1, frequencia2))
 
-        val lista = frequenciaCardiacaRepository.findByUsuarioId(usuarioCardiacaId)
+        val lista = frequenciaCardiacaRepository.findByUser(usuarioCardiacaId)
 
         assertEquals(2, lista.size)
         assertEquals(72, lista[0].valor)

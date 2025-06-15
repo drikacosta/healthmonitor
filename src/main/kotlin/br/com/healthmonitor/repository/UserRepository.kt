@@ -24,12 +24,12 @@ interface HealthRecordRepository : JpaRepository<HealthRecord, String> {
     fun findAllByUser(user: User): List<HealthRecord>
 }
 interface GlicemiaRepository : JpaRepository<GlicemiaManual, String> {
-    fun findByUsuarioId(usuarioGlicemiaId : String): List<GlicemiaManual>
+    fun findByUser_Id(user: User): List<GlicemiaManual>
 }
 
 interface FrequenciaCardiacaRepository : JpaRepository<FrequenciaCardiaca, String> {
-    fun findByUsuarioId(usuarioCardiacaId: String): List<FrequenciaCardiaca>
+    fun findByUser(user: User): List<FrequenciaCardiaca>
 }
 interface PressaoArterialRepository : JpaRepository<PressaoArterial, String> {
-    fun findByUsuarioId(usuarioArterialId: String): List<PressaoArterial>
+    fun findByUserId(user: User): List<PressaoArterial>
 }

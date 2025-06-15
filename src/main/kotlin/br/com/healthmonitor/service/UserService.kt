@@ -16,11 +16,12 @@ import br.com.healthmonitor.repository.PressaoArterialRepository
 import br.com.healthmonitor.repository.UserRepository
 import br.com.healthmonitor.validator.HealthRecordValidator
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class UserService(private val userRepository: UserRepository) {
     fun getByEmail(email: String): User? = userRepository.findByEmail(email)
-
+    fun getById(id: UUID): User? = userRepository.findById(id).orElse(null)
     fun create(user: User): User = userRepository.save(user)
 }
 
@@ -41,38 +42,42 @@ class HealthService(
     private val validator: HealthRecordValidator,
     private val glicemiaRepo: GlicemiaRepository,
     private val freqRepo: FrequenciaCardiacaRepository,
-    private val pressaoRepo: PressaoArterialRepository
+    private val pressaoRepo: PressaoArterialRepository,
+    private val userService: UserService
 ) {
 
     fun registrar(dto: HealthRecordDTO) {
         validator.validate(dto)
 
+        val user = userService.getById(dto.userId as UUID)
+            ?: throw IllegalArgumentException("Usuário com o id ${dto.userId} não encontrado")
+
         when (dto.type) {
             HealthType.glicemia -> {
                 val entity = GlicemiaManual(
-                    usuarioGlicemiaId = dto.userId,
-                    valorGlicemia = dto.valor1.toDouble(),
+                    valorGlicemia = dto.valor1,
                     dataHora = dto.timestamp,
+                    user = user
                 )
                 glicemiaRepo.save(entity)
             }
 
             HealthType.pressao_arterial -> {
                 val entity = PressaoArterial(
-                    usuarioArterialId = dto.userId,
                     sistolica = dto.valor1.toInt(),
                     diastolica = dto.valor2?.toInt() ?: 0,
-                    dataHora = dto.timestamp
+                    dataHora = dto.timestamp,
+                    user = user
                 )
                 pressaoRepo.save(entity)
             }
 
             HealthType.frequencia_cardiaca -> {
                 val entity = FrequenciaCardiaca(
-                    usuarioCardiacaId = dto.userId,
                     batimentos = dto.valor1.toInt(),
                     dataHora = dto.timestamp,
-                    dispositivoId = "manual" // ou vindo do DTO
+                    dispositivoId = "manual", // ou vindo do DTO
+                    user= user
                 )
                 freqRepo.save(entity)
             }
