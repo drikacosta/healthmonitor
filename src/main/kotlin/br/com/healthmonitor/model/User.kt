@@ -1,6 +1,5 @@
 package br.com.healthmonitor.model
 
-import br.com.healthmonitor.dto.HealthType
 import jakarta.persistence.*
 import java.time.LocalDateTime
 import java.util.*
@@ -8,13 +7,13 @@ import java.util.*
 @Entity
 @Table(name = "users")
 data class User(
-
-    @Id val id: String = UUID.randomUUID().toString(), @Column(unique = true, nullable = false) val username: String,
+    @Id val id: String = UUID.randomUUID().toString(),
+    @Column(unique = true, nullable = false)
     val name: String,
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     val email: String,
-    @Column(name = "password_hash")
-    val passwordHash: String,
+    @Column(nullable = false)
+    val password: String,
     @Column(name = "created_at") val createdAt: LocalDateTime = LocalDateTime.now()
 )
 
@@ -62,6 +61,7 @@ data class GlicemiaManual(
     @JoinColumn(name = "user_id")
     val user: User
 )
+
 @Entity
 @Table(name = "frequencia_cardiaca")
 data class FrequenciaCardiaca(
@@ -86,4 +86,8 @@ data class PressaoArterial(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: User
+)
+
+data class JwtResponse(
+    val token: String
 )
