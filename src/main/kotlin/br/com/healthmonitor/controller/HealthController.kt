@@ -1,17 +1,14 @@
 package br.com.healthmonitor.controller
 
 import br.com.healthmonitor.dto.HealthRecordDTO
-import br.com.healthmonitor.service.HealthService
+import br.com.healthmonitor.service.UserService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/registro")
 class HealthController(
-    private val service: HealthService
+    private val service: UserService.HealthService
 ) {
 
     @PostMapping

@@ -1,7 +1,7 @@
 package br.com.healthmonitor.validator
 
 import br.com.healthmonitor.dto.HealthRecordDTO
-import br.com.healthmonitor.dto.HealthType
+import br.com.healthmonitor.model.HealthType
 import org.springframework.stereotype.Component
 
 

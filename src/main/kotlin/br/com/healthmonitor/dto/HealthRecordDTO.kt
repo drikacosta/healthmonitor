@@ -1,5 +1,6 @@
 package br.com.healthmonitor.dto
 
+import br.com.healthmonitor.model.HealthType
 import java.time.LocalDateTime
 
 data class HealthRecordDTO(
@@ -11,9 +12,3 @@ data class HealthRecordDTO(
     val observacao: String? = null,
     val timestamp: LocalDateTime
 )
-
-enum class HealthType {
-    pressao_arterial,
-    glicemia,
-    frequencia_cardiaca
-}
